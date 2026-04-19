@@ -21,7 +21,7 @@ data "aws_subnets" "default" {
   }
 }
 
-# Security Group
+# Security Group for ECS
 resource "aws_security_group" "ecs_sg" {
   name   = "ecs-tf-sg"
   vpc_id = data.aws_vpc.default.id
@@ -30,7 +30,7 @@ resource "aws_security_group" "ecs_sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # open for now (learning only)
+    cidr_blocks = [aws_security_group.alb_sg.id]
   }
 
   egress {
@@ -120,5 +120,74 @@ resource "aws_ecs_service" "app" {
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.app.arn
+    container_name   = "springboot-app"
+    container_port   = 8080
+  }
+
+  depends_on = [aws_lb_listener.app]
+
 }
 
+
+# Security Group for ALB
+resource "aws_security_group" "alb_sg" {
+  name   = "alb-sg"
+  vpc_id = data.aws_vpc.default.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# ALB
+resource "aws_lb" "app" {
+  name               = "springboot-alb"
+  load_balancer_type = "application"
+  subnets            = data.aws_subnets.default.ids
+  security_groups    = [aws_security_group.alb_sg.id]
+}
+
+# ALB Target Group
+resource "aws_lb_target_group" "app" {
+  name        = "springboot-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = data.aws_vpc.default.id
+  target_type = "ip"
+
+  health_check {
+    path                = "/hello"
+    port                = "8080"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+# ALB Listener
+resource "aws_lb_listener" "app" {
+  load_balancer_arn = aws_lb.app.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app.arn
+  }
+}
