@@ -134,7 +134,7 @@ resource "aws_ecs_service" "app" {
 
 # Security Group for ALB
 resource "aws_security_group" "alb_sg" {
-  name   = "alb-sg"
+  name   = "alb-tf-sg"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
