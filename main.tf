@@ -23,7 +23,7 @@ data "aws_subnets" "default" {
 
 # Security Group
 resource "aws_security_group" "ecs_sg" {
-  name   = "ecs-sg"
+  name   = "ecs-tf-sg"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
@@ -62,9 +62,15 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 }
 
+# ECS Task Execution Role Policy
 resource "aws_iam_role_policy_attachment" "ecs_policy" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name = "/ecs/springboot-app"
 }
 
 # ECS Task Definition
@@ -88,6 +94,15 @@ resource "aws_ecs_task_definition" "app" {
           protocol      = "tcp"
         }
       ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/springboot-app"
+          awslogs-region        = "ap-south-2"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
 }
