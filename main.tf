@@ -23,7 +23,7 @@ data "aws_subnets" "default" {
 
 # Security Group
 resource "aws_security_group" "ecs_sg" {
-  name   = "ecs-tf-sg"
+  name   = "ecs-sg"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
