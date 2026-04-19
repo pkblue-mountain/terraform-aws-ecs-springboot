@@ -100,7 +100,7 @@ resource "aws_ecs_task_definition" "app" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "aws_cloudwatch_log_group.ecs_logs.name"
+          awslogs-group         = aws_cloudwatch_log_group.ecs_logs.name
           awslogs-region        = "ap-south-2"
           awslogs-stream-prefix = "ecs"
         }
