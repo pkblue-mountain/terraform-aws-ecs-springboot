@@ -1,13 +1,13 @@
-# ECR
-resource "aws_ecr_repository" "springboot_app" {
-  name = "springboot-app"
+# # ECR
+# resource "aws_ecr_repository" "springboot_app" {
+#   name = "springboot-app"
 
-  image_scanning_configuration {
-    scan_on_push = true
-  }
+#   image_scanning_configuration {
+#     scan_on_push = true
+#   }
 
-  image_tag_mutability = "MUTABLE"
-}
+#   image_tag_mutability = "MUTABLE"
+# }
 
 # VPC
 data "aws_vpc" "default" {
