@@ -48,7 +48,7 @@ resource "aws_ecs_cluster" "main" {
 
 # ECS Task Execution Role
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
+  name = "ecsTaskExecutionRole-tf"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
