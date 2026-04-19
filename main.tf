@@ -23,7 +23,7 @@ data "aws_subnets" "default" {
 
 # Security Group
 resource "aws_security_group" "ecs_sg" {
-  name   = "ecs-sg"
+  name   = "ecs-tf-sg"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
@@ -112,7 +112,7 @@ resource "aws_ecs_service" "app" {
   name            = "springboot-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = 0
+  desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
