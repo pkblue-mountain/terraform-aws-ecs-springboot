@@ -171,7 +171,7 @@ resource "aws_lb_target_group" "app" {
   target_type = "ip"
 
   health_check {
-    path                = "/hello"
+    path                = "/actuator/health"
     port                = "8080"
     protocol            = "HTTP"
     matcher             = "200"
