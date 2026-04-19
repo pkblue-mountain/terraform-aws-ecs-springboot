@@ -9,6 +9,10 @@
 #   image_tag_mutability = "MUTABLE"
 # }
 
+data "aws_ecr_repository" "app" {
+  name = "springboot-app"
+}
+
 # VPC
 data "aws_vpc" "default" {
   default = true
