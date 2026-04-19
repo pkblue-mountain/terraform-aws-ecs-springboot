@@ -30,7 +30,7 @@ resource "aws_security_group" "ecs_sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = [aws_security_group.alb_sg.id]
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
   egress {
@@ -156,7 +156,7 @@ resource "aws_security_group" "alb_sg" {
 resource "aws_lb" "app" {
   name               = "springboot-alb"
   load_balancer_type = "application"
-  subnets            = data.aws_subnets.default.ids
+  subnets            = [subnet-0f72c0e8f14649fcf, subnet-04d6ea8d1939de6e8]
   security_groups    = [aws_security_group.alb_sg.id]
 }
 
