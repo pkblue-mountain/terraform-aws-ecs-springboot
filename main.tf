@@ -27,9 +27,9 @@ resource "aws_security_group" "ecs_sg" {
   vpc_id = data.aws_vpc.default.id
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id]
   }
 
@@ -75,6 +75,8 @@ resource "aws_cloudwatch_log_group" "ecs_logs" {
 
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
+  depends_on = [aws_cloudwatch_log_group.ecs_logs]
+
   family                   = "springboot-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
